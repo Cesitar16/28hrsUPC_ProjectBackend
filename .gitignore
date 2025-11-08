@@ -1,0 +1,68 @@
+# Ignorar archivos de entorno
+.env
+.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Entornos virtuales de Python
+venv/
+ENV/
+env/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Archivos byte-compiled y caches de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Paquetes, builds y distribuciones
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Bases de datos y archivos de desarrollo
+*.sqlite3
+*.db
+db.sqlite3
+
+# Logs
+*.log
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editores / IDEs
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Archivos temporales y de backup
+*~
+*.swp
+*.tmp
+*.temp
+
+# Dependencias de Node (por si hay frontend en el repo)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+pnpm-lock.yaml
+
+# Cobertura y reportes
+htmlcov/
+.coverage
+.coverage.*
+
+# Otros
+Thumbs.db
+.cache/
+
