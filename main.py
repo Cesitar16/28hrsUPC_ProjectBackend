@@ -1,29 +1,38 @@
 from fastapi import FastAPI
-from app.routes.chat_routes import router as chat_router
-from app.routes.diario_routes import router as diario_router
 from fastapi.middleware.cors import CORSMiddleware
-# ==========================================================
-# 🧠 MI DIARIO IA - BACKEND PRINCIPAL
-# ==========================================================
+from app.routes import chat_routes, diario_routes, users_routes, dashboard_routes
 
 app = FastAPI(
-    title="MiDiarioIA Backend",
-    description="API del diario emocional inteligente 'Auri', basada en FastAPI + Supabase + OpenAI.",
-    version="1.0.0",
+    title="MiDiarioAI API",
+    description="API para la aplicación de bienestar emocional MiDiarioAI.",
+    version="1.0.0"
 )
 
-# Rutas principales
-app.include_router(chat_router)
-app.include_router(diario_router)
+origins = [
+    "http://localhost:4321",
+    "http://127.0.0.1:4321",
+    "http://localhost:3000",
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Ruta raíz
+app.include_router(users_routes.router, prefix="/api")
+
+app.include_router(chat_routes.router, prefix="/api")
+
+app.include_router(diario_routes.router, prefix="/api")
+
+app.include_router(dashboard_routes.router, prefix="/api")
+
 @app.get("/")
-def root():
-    return {"message": "🚀 API de MiDiarioIA lista y funcionando correctamente"}
+def read_root():
+    """
+    Endpoint raíz para verificar que la API está funcionando.
+    """
+    return {"message": "Bienvenido a MiDiarioAI API. (v1.0.0)"}

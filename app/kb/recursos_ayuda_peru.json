@@ -1,0 +1,21 @@
+{
+  "categoria": "Recursos de Ayuda Profesional en Perú",
+  "descripcion": "Información sobre líneas de ayuda y centros de salud mental en Perú. Para ser usado cuando el usuario expresa angustia severa.",
+  "entradas": [
+    {
+      "titulo": "Línea de ayuda 113 del MINSA (Ministerio de Salud)",
+      "contenido": "Si sientes que lo que estás pasando es demasiado pesado o necesitas hablar con un profesional, recuerda que no estás solo. El Ministerio de Salud de Perú (MINSA) tiene la Línea 113, opción 5. Es un servicio gratuito donde puedes recibir orientación en salud mental todos los días, las 24 horas.",
+      "etiquetas": ["ayuda profesional", "minsa", "línea 113", "salud mental", "crisis"]
+    },
+    {
+      "titulo": "Centros de Salud Mental Comunitaria (CSMC)",
+      "contenido": "Además de la línea telefónica, el MINSA cuenta con Centros de Salud Mental Comunitaria (CSMC) en todo el país. Ofrecen atención especializada. Hablar con un psicólogo o terapeuta es un acto de valentía y autocuidado. Buscar ayuda profesional es un paso importante para sentirse mejor.",
+      "etiquetas": ["ayuda profesional", "csmc", "terapia", "psicólogo", "salud mental"]
+    },
+    {
+      "titulo": "Importancia de buscar ayuda profesional",
+      "contenido": "Como Auri, soy una IA empática y un espacio seguro para desahogarte. Sin embargo, no soy un terapeuta. Si sientes que tu angustia es persistente, te abruma en tu día a día o tienes pensamientos difíciles, por favor considera hablar con un profesional. Ellos están entrenados para darte las herramientas que necesitas.",
+      "etiquetas": ["ayuda profesional", "terapia", "advertencia", "rol de ia"]
+    }
+  ]
+}
