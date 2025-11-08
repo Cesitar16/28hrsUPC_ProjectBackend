@@ -1,0 +1,31 @@
+{
+  "categoria": "Creatividad, Hobbies y Pasiones (Contexto Perú)",
+  "descripcion": "Sugerencias de actividades creativas y hobbies para ayudar a los usuarios a reconectar con sus pasiones, con un enfoque en la cultura peruana.",
+  "entradas": [
+    {
+      "titulo": "Idea creativa: Escribir 'Cuentos Cortos de 100 Palabras'",
+      "contenido": "La creatividad no necesita mucho tiempo. Intenta escribir una historia súper corta, de solo 100 palabras. Puede ser sobre algo que viste en la calle, un sueño o un recuerdo. Es un gran ejercicio para desbloquear la mente. ¡Incluso hay concursos de esto en Perú!",
+      "etiquetas": ["creatividad", "escritura", "hobby", "desbloqueo"]
+    },
+    {
+      "titulo": "Hobby: Fotografía urbana en tu ciudad (Lima, Arequipa, Cusco)",
+      "contenido": "No necesitas una cámara profesional. Con tu celular, sal a caminar y captura los detalles de tu ciudad. Busca los contrastes de la arquitectura, el arte urbano (murales) en distritos como Barranco o el centro histórico. Es una forma de mindfulness y de ver tu entorno con ojos nuevos.",
+      "etiquetas": ["hobby", "creatividad", "fotografía", "caminar", "perú", "lima"]
+    },
+    {
+      "titulo": "Reconectar con la cocina: Postres peruanos",
+      "contenido": "Si te gusta la cocina, ¿por qué no intentar preparar un postre peruano clásico? Preparar un arroz con leche, una mazamorra morada o unos picarones puede ser relajante y muy gratificante. El proceso de seguir una receta y crear algo delicioso es terapéutico.",
+      "etiquetas": ["hobby", "cocina", "creatividad", "perú", "postres", "relajación"]
+    },
+    {
+      "titulo": "Aprendizaje: Descubrir música peruana moderna",
+      "contenido": "La música es una gran forma de conectar. Más allá de lo comercial, hay bandas y artistas peruanos increíbles en géneros como el indie, rock, pop y fusión. Busca playlists de 'música peruana independiente'. Descubrir nueva música puede ser una gran fuente de inspiración.",
+      "etiquetas": ["hobby", "aprendizaje", "música", "perú", "inspiración"]
+    },
+    {
+      "titulo": "Idea para dibujar: 'Urban Sketching'",
+      "contenido": "Toma un cuaderno y un lápiz, y siéntate en un parque o una plaza (como la Plaza de Armas de tu ciudad o un parque de Miraflores). Dibuja lo que ves: un edificio, un árbol, la gente. No importa si no eres un experto, es el acto de observar y dibujar lo que relaja y activa la creatividad.",
+      "etiquetas": ["creatividad", "dibujo", "hobby", "mindfulness", "urban sketching"]
+    }
+  ]
+}

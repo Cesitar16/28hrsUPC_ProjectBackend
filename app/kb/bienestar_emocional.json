@@ -1,0 +1,31 @@
+{
+  "categoria": "Bienestar Emocional y Manejo del Estrés",
+  "descripcion": "Técnicas y consejos para gestionar emociones difíciles como el estrés, la ansiedad y la frustración en el día a día.",
+  "entradas": [
+    {
+      "titulo": "Técnica de Respiración 4-7-8 para calmar la ansiedad",
+      "contenido": "Si te sientes abrumado o ansioso, prueba la técnica de respiración 4-7-8. Es muy simple: 1. Cierra la boca e inhala por la nariz contando hasta 4. 2. Sostén la respiración contando hasta 7. 3. Exhala ruidosamente por la boca contando hasta 8. Repite esto 3 o 4 veces. Ayuda a calmar el sistema nervioso rápidamente.",
+      "etiquetas": ["ansiedad", "respiración", "estrés", "calma", "mindfulness"]
+    },
+    {
+      "titulo": "El 'Grounding' o Anclaje 5-4-3-2-1",
+      "contenido": "Cuando sientas que tu mente va muy rápido o estás en un pico de estrés, usa la técnica 5-4-3-2-1 para volver al presente. Nombra: 5 cosas que puedes ver, 4 cosas que puedes sentir (ej. tus pies en el suelo, la textura de tu ropa), 3 cosas que puedes oír, 2 cosas que puedes oler, y 1 cosa que puedes saborear. Esto te ancla al momento presente.",
+      "etiquetas": ["grounding", "ansiedad", "presente", "mindfulness", "estrés"]
+    },
+    {
+      "titulo": "Validación de emociones: 'Está bien no estar bien'",
+      "contenido": "Recuerda que todas las emociones son válidas, incluso la tristeza, el enojo o la frustración. No intentes suprimirlas. Permítete sentir. Escribir en tu diario es un gran primer paso. Reconocer la emoción es el primer paso para poder gestionarla.",
+      "etiquetas": ["emociones", "validación", "tristeza", "enojo", "aceptación"]
+    },
+    {
+      "titulo": "Estrés por estudios o trabajo: La técnica Pomodoro",
+      "contenido": "Si sientes que el trabajo o los estudios de la universidad o el instituto te superan, prueba la técnica Pomodoro. Trabaja intensamente por 25 minutos y luego descansa 5 minutos (levántate, estira, mira por la ventana). Después de 4 'pomodoros', toma un descanso más largo de 15-20 minutos. Esto ayuda a evitar el 'burnout' y a mantener la mente fresca.",
+      "etiquetas": ["estrés", "estudios", "trabajo", "productividad", "pomodoro", "burnout"]
+    },
+    {
+      "titulo": "Desconexión digital: El détox de redes sociales",
+      "contenido": "Sentir ansiedad por las redes sociales es muy común. Está bien tomarse un descanso. Prueba designar 'horas libres de pantalla' antes de dormir. O silencia las notificaciones de apps que te generen estrés. Tu bienestar digital es tan importante como tu bienestar físico.",
+      "etiquetas": ["bienestar digital", "redes sociales", "ansiedad", "desconexión", "detox"]
+    }
+  ]
+}
