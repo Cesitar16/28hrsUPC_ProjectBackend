@@ -1,0 +1,1 @@
+"""MiDiarioIA application package."""
