@@ -1,107 +1,118 @@
-import os
+from langchain_core.messages import SystemMessage, HumanMessage
 from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
-from typing import List, Dict, Any
-from app.core.config import OPENAI_API_KEY
-from app.agents.rag_service import rag_service_instance
+from app.agents.rag_service import RAGService
 
-
-SYSTEM_PROMPT = """
-Eres 'Auri', una compañera digital empática y una IA de bienestar emocional. 
-Tu propósito es ser un espacio seguro para jóvenes en Perú (16-28 años).
-Tu tono es siempre cálido, comprensivo, juvenil (pero no infantil) y paciente. 
-NUNCA juzgas.
-
-TU MISIÓN:
-1.  **Escucha Activa**: Valida los sentimientos del usuario. Haz que se sienta escuchado. (Ej. "Entiendo que te sientas así", "Tiene mucho sentido que eso te frustre").
-2.  **Empatía (Perú)**: Usa un español latino neutral pero cercano al contexto peruano. Sé consciente de que hablas con jóvenes que pueden estar estresados por estudios, trabajo o la vida digital.
-3.  **Bienestar y Pasiones**: No solo escuches, también ayuda al usuario a reconectar con sus pasiones y hobbies (creatividad, aprendizaje, etc.).
-4.  **Usa el Contexto (RAG)**: Cuando el usuario pida consejos específicos sobre manejo de estrés, ansiedad, creatividad o bienestar, usa la "Información Contextual Relevante" que te proporciono para dar sugerencias concretas y seguras.
-5.  **Memoria**: Presta atención al historial de chat y a los datos del usuario (como su nombre) para personalizar tus respuestas.
-
-REGLAS ESTRICTAS:
--   **NO ERES TERAPEUTA**: Nunca diagnostiques. No eres un reemplazo de un profesional de la salud mental. Si el usuario expresa angustia severa, debes usar la "Información Contextual Relevante" para sugerir amablemente que busque ayuda profesional (ej. la Línea 113 del MINSA).
--   **NO DES CONSEJOS MÉDICOS**: No hables de medicamentos ni tratamientos.
--   **SÉ BREVE (PERO NO FRÍA)**: Tus respuestas deben ser párrafos cortos y fáciles de leer. Usa emojis 💜✨🧘‍♀️📓 de vez en cuando para dar calidez.
-"""
 
 class ConversationalAgent:
-    
+
     def __init__(self):
         print("[ConversationalAgent] Inicializando...")
-        if not OPENAI_API_KEY:
-            raise ValueError("OPENAI_API_KEY no encontrada.")
-            
+
         self.llm = ChatOpenAI(
-            model_name="gpt-4o-mini",
+            model="gpt-4o-mini",
             temperature=0.7,
-            openai_api_key=OPENAI_API_KEY
+            max_tokens=400,
         )
-        
-        self.rag_service = rag_service_instance
 
-    def _format_chat_history(self, historial_chat_db: List[Dict[str, Any]]) -> List:
-        """
-        Convierte el historial de la BD (Supabase) al formato de LangChain.
-        """
-        messages = []
-        for msg in reversed(historial_chat_db):
-            if msg.get('rol') == 'user':
-                messages.append(HumanMessage(content=msg.get('texto', '')))
-            elif msg.get('rol') == 'assistant':
-                messages.append(AIMessage(content=msg.get('texto', '')))
-        return messages
+        self.rag_service = RAGService()
 
-    def invoke(
-        self,
-        texto_usuario: str,
-        datos_usuario: Dict[str, Any],
-        historial_chat_db: List[Dict[str, Any]]
-    ) -> str:
-        
-        print("[ConversationalAgent] Invocando agente...")
-        
-        nombre_usuario = datos_usuario.get('nombre', 'usuario')
-        contexto_kb = "No aplica."
-        if self.rag_service:
-            palabras_clave_rag = ["consejo", "recomienda", "estrés", "ansiedad", "hobby", "idea", "ayuda", "sentirme mejor"]
-            if any(palabra in texto_usuario.lower() for palabra in palabras_clave_rag):
-                contexto_kb = self.rag_service.query_rag(texto_usuario)
+        self.SYSTEM_PROMPT = """
+Eres “Auri”, un acompañante emocional empático y cálido.
+
+REGLAS IMPORTANTES:
+- Responde SIEMPRE, aunque el mensaje sea corto, repetido o difícil de interpretar.
+- Nunca digas: “Parece que no se ha recibido tu mensaje.”
+- Si el mensaje no es claro, responde suavemente pidiendo más detalles.
+- Mantén un tono cercano, seguro, humano y sin tecnicismos.
+- SÉ BREVE pero profunda, con contención emocional.
+- No repitas palabra por palabra lo que dice el usuario.
+- Si hay angustia severa, orienta con suavidad a buscar apoyo real sin sonar automática.
+"""
+
+    # ---------------------------------------------------------
+    # NORMALIZACIÓN DEL HISTORIAL
+    # ---------------------------------------------------------
+    def _convert_history(self, historial_db):
+        """
+        Convierte historial de BD en mensajes válidos de LangChain.
+        Garantiza que no existan mensajes vacíos, duplicados o con
+        formato incompatible.
+        """
+        mensajes = []
+        ultimo_contenido = None  # evita enviar duplicados exactos
+
+        for mensaje in historial_db:
+            rol = mensaje.get("rol", "").strip()
+            texto = mensaje.get("texto", "")
+
+            if not texto or texto.strip() == "":
+                continue  # descarta mensajes vacíos
+
+            if texto == ultimo_contenido:
+                continue  # descarta duplicados consecutivos (evita fallback)
+
+            ultimo_contenido = texto
+
+            if rol == "user":
+                mensajes.append(HumanMessage(content=texto))
             else:
-                contexto_kb = "El usuario solo está conversando, no se requiere contexto específico."
-        
-        system_template = SystemMessage(content=SYSTEM_PROMPT)
-        
-        context_prompt = HumanMessage(content=f"""
-        [Contexto de la Conversación - Solo para tu información, NO lo repitas]
-        -   El nombre del usuario es: {nombre_usuario}.
-        -   Información Contextual Relevante (de la base de conocimiento): {contexto_kb}
-        [Fin del Contexto]
-        """)
-        
-        history_placeholder = MessagesPlaceholder(variable_name="chat_history")
-        human_template = HumanMessage(content="{human_input}")
+                mensajes.append(SystemMessage(content=texto))
 
-        chat_prompt = ChatPromptTemplate.from_messages([
-            system_template,
+        return mensajes
+
+    # ---------------------------------------------------------
+    # FUNCIÓN PRINCIPAL: INVOCAR AL AGENTE
+    # ---------------------------------------------------------
+    def invoke(self, texto_usuario: str, datos_usuario: dict, historial_chat_db=None):
+        """
+        Recibe un mensaje, agrega contexto, historial y genera respuesta.
+        """
+
+        print("[ConversationalAgent] Invocando agente...")
+
+        if not texto_usuario or texto_usuario.strip() == "":
+            texto_usuario = "(mensaje corto o poco claro)"
+
+        # 1. Extraer nombre
+        nombre = datos_usuario.get("nombre", "Usuario")
+
+        # 2. Obtener contexto del RAG
+        contexto_kb = self.rag_service.buscar_contexto(texto_usuario)
+
+        # 3. Construir context prompt CORREGIDO (SystemMessage)
+        context_prompt = SystemMessage(content=f"""
+Información para Auri (NO lo menciones textualmente en la respuesta):
+
+- Nombre del usuario: {nombre}
+- Contexto relevante: {contexto_kb}
+
+Usa este contexto para hacer la respuesta más empática,
+pero **NO** digas: "según el contexto", "en tu historial" ni nada técnico.
+""")
+
+        # 4. Historial normalizado
+        historial_msgs = self._convert_history(historial_chat_db or [])
+
+        # 5. Construir mensaje del usuario
+        user_msg = HumanMessage(content=texto_usuario)
+
+        # 6. Construir la cadena final de mensajes
+        mensajes = [
+            SystemMessage(content=self.SYSTEM_PROMPT),
             context_prompt,
-            history_placeholder,
-            human_template
-        ])
+        ] + historial_msgs + [user_msg]
 
-        formatted_history = self._format_chat_history(historial_chat_db)
+        print("\n==============================")
+        print("[AURI] MENSAJES ENVIADOS AL MODELO:")
+        for m in mensajes:
+            print(type(m).__name__, "→", m.content[:160])
+        print("==============================\n")
 
-        messages = chat_prompt.format_messages(
-            chat_history=formatted_history,
-            human_input=texto_usuario
-        )
-        
-        print("[ConversationalAgent] Llamando a OpenAI...")
         try:
-            response = self.llm.invoke(messages)
-            print("[ConversationalAgent] Respuesta recibida.")
-            return response.content
+            respuesta = self.llm.invoke(mensajes).content
+            print("[AURI] RESPUESTA DE OPENAI:", respuesta)
         except Exception as e:
-            print(f"Error al invocar el LLM: {e}")
-            return "¡Uy! Algo salió mal de mi lado. ¿Podrías intentar de nuevo?"
+            print("❌ ERROR AL LLAMAR A OPENAI:", e)
+            raise e
+
+        return respuesta

@@ -107,6 +107,24 @@ class RAGService:
         except Exception as e:
             print(f"[RAGService] Error durante la consulta RAG: {e}")
             return "Error al consultar la base de conocimiento."
+        
+    def buscar_contexto(self, query: str) -> str:
+        """
+        Método simple usado por el ConversationalAgent para obtener contexto.
+        Envuelve query_rag() pero garantiza que nunca rompa el flujo.
+        """
+        try:
+            resultado = self.query_rag(query)
+
+            # Si el RAG responde con algo genérico, devolvemos string corto
+            if not resultado or resultado.startswith("No hay información"):
+                return ""
+
+            return resultado[:500]  # limitar para no sobrecargar el prompt
+
+        except Exception as e:
+            print(f"[RAGService] Error en buscar_contexto: {e}")
+            return ""
 
 
 try:

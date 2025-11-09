@@ -9,6 +9,7 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
     try:
         print(f"[DashboardService] Calculando métricas para {usuario_id}")
         
+        # 1. Obtener entradas del diario
         entradas_res = supabase.table("entradas_diario") \
             .select("emocion_predominante, categoria_emocional, promedio_sentimiento") \
             .eq("usuario_id", usuario_id) \
@@ -16,6 +17,7 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
         
         entradas = entradas_res.data or []
 
+        # 2. Obtener mensajes de chat
         mensajes_res = supabase.table("mensajes_chat") \
             .select("emocion_detectada, categoria_emocional, puntuacion_sentimiento") \
             .eq("usuario_id", usuario_id) \
@@ -26,13 +28,12 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
         mensajes = mensajes_res.data or []
 
         total_entradas = len(entradas)
-        total_mensajes_analizados = len(mensajes)
-
+        
         conteo_emociones = {}
         total_sentimiento = 0.0
         conteo_total = 0
 
-        # Iteramos sobre las entradas del diario
+        # 3. Procesar entradas del diario
         for entrada in entradas:
             emocion = entrada.get('emocion_predominante')
             sentimiento = entrada.get('promedio_sentimiento')
@@ -43,7 +44,7 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
                 total_sentimiento += sentimiento
                 conteo_total += 1
 
-        # Iteramos sobre los mensajes de chat analizados
+        # 4. Procesar mensajes de chat analizados
         for mensaje in mensajes:
             emocion = mensaje.get('emocion_detectada')
             sentimiento = mensaje.get('puntuacion_sentimiento')
@@ -54,13 +55,14 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
                 total_sentimiento += sentimiento
                 conteo_total += 1
 
+        # 5. Calcular resultados
         promedio_sentimiento_general = (total_sentimiento / conteo_total) if conteo_total > 0 else 0.0
 
         emocion_principal = None
         if conteo_emociones:
             emocion_principal = max(conteo_emociones, key=conteo_emociones.get)
 
-        # 4. Devolver el resultado
+        # 6. Devolver el resultado
         return {
             "total_entradas_diario": total_entradas,
             "emocion_mas_frecuente": emocion_principal,
