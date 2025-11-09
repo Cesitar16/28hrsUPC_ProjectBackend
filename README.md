@@ -142,10 +142,10 @@ Incluye vistas predefinidas:
 
 ### 💬 `/chat`
 
-| Método | Ruta                           | Descripción                                                     |
-| ------ | ------------------------------ | --------------------------------------------------------------- |
-| `POST` | `/chat/enviar`                 | Envía un mensaje a Auri → guarda y devuelve análisis emocional. |
-| `GET`  | `/chat/historial/{usuario_id}` | Devuelve todos los mensajes del usuario.                        |
+| Método | Ruta                | Descripción                                                     |
+| ------ | ------------------- | --------------------------------------------------------------- |
+| `POST` | `/api/chat/invoke`  | Envía un mensaje a Auri → guarda y devuelve análisis emocional. |
+| `GET`  | `/api/chat/history` | Devuelve el historial de chat del usuario.                      |
 
 #### Ejemplo de petición:
 
@@ -174,10 +174,10 @@ POST /chat/enviar
 
 ### 📓 `/diario`
 
-| Método | Ruta                            | Descripción                                                   |
-| ------ | ------------------------------- | ------------------------------------------------------------- |
-| `POST` | `/diario/entrada`               | Crea una nueva entrada de diario y la analiza emocionalmente. |
-| `GET`  | `/diario/entradas/{usuario_id}` | Devuelve todas las reflexiones del usuario.                   |
+| Método | Ruta             | Descripción                                                   |
+| ------ | ---------------- | ------------------------------------------------------------- |
+| `POST` | `/api/diario`    | Crea una nueva entrada de diario y la analiza emocionalmente. |
+| `GET`  | `/api/diario`    | Devuelve todas las reflexiones del usuario.                   |
 | `GET`  | `/diario/resumen/{usuario_id}`  | Muestra el último resumen emocional guardado.                 |
 | `POST` | `/diario/resumen-semanal`       | Genera resumen global a partir de los mensajes de la semana.  |
 

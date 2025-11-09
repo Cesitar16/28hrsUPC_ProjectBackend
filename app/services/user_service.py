@@ -1,4 +1,4 @@
-from app.core.supabase_client import supabase
+from app.core.database import supabase
 from typing import Optional, Dict, Any
 
 def crear_usuario(id_auth: str, email: str, nombre: Optional[str] = None) -> Dict[str, Any]:

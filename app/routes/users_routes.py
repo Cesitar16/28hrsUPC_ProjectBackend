@@ -1,8 +1,8 @@
 from fastapi import APIRouter, HTTPException, Body
-from app.core.supabase_client import supabase
+from app.core.database import supabase
 from app.schemas.usuario_schema import UsuarioCreate, UsuarioLogin, TokenResponse
 import app.services.user_service as user_service
-from gotrue.errors import GoTrueApiError
+from gotrue.errors import GotrueError
 
 router = APIRouter()
 
@@ -44,7 +44,7 @@ def register_user(
             "token_type": "bearer"
         }
 
-    except GoTrueApiError as e:
+    except GotrueError as e:
         print(f"Error de Supabase al registrar: {e}")
         raise HTTPException(status_code=400, detail=f"Error al registrar: {e.message}")
     except Exception as e:
@@ -80,7 +80,7 @@ def login_for_access_token(
             "token_type": "bearer"
         }
         
-    except GoTrueApiError as e:
+    except GotrueError as e:
         print(f"Error de Supabase al iniciar sesión: {e}")
         raise HTTPException(status_code=401, detail=f"Email o contraseña incorrectos: {e.message}")
     except Exception as e:

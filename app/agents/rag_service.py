@@ -1,5 +1,6 @@
+import glob
 import os
-from langchain_community.document_loaders import DirectoryLoader
+from langchain_community.document_loaders import UnstructuredJSONLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
@@ -9,6 +10,7 @@ from langchain_core.runnables import RunnablePassthrough
 from app.core.config import OPENAI_API_KEY
 
 KB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kb")
+
 
 class RAGService:
     """Servicio RAG moderno (LCEL). Usa la API de runnables en lugar de RetrievalQA."""
@@ -28,17 +30,27 @@ class RAGService:
                 return None
 
             print(f"[RAGService] Cargando documentos desde: {KB_DIR}")
-            
-            loader = DirectoryLoader(
-                KB_DIR,
-                show_progress=True,
-                use_multithreading=True,
-                loader_kwargs={"json_loader_kwargs": {"jq_schema": "try .entradas[] | .titulo + \": \" + .contenido catch .", "text_content": False}}
-            )
-            # ---------------------------------
-            
-            documents = loader.load()
-            
+
+            documents = []
+            json_files = glob.glob(os.path.join(KB_DIR, "*.json"))
+
+            if not json_files:
+                print(f"[RAGService] ADVERTENCIA: No se encontraron archivos .json en {KB_DIR}")
+                return None
+
+            for file_path in json_files:
+                print(f"[RAGService] Cargando archivo: {file_path}")
+                try:
+                    loader = UnstructuredJSONLoader(
+                        file_path,
+                        jq_schema='try .entradas[] | .titulo + ": " + .contenido catch .',
+                        text_content=False,
+                        is_ndjson=False,
+                    )
+                    documents.extend(loader.load())
+                except Exception as e:
+                    print(f"[RAGService] Error cargando archivo {file_path}: {e}")
+
             if not documents:
                 print("[RAGService] ADVERTENCIA: No se cargó ningún documento. Verifica los loaders y los archivos JSON.")
                 return None

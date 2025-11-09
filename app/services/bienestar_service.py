@@ -1,4 +1,4 @@
-from app.core.supabase_client import supabase
+from app.core.database import supabase
 from datetime import datetime
 
 def agregar_actividad(usuario_id: str, tipo: str, descripcion: str):
