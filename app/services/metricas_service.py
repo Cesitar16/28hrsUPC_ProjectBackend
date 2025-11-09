@@ -20,7 +20,7 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
             .select("emocion_detectada, categoria_emocional, puntuacion_sentimiento") \
             .eq("usuario_id", usuario_id) \
             .eq("rol", "user") \
-            .not_is("emocion_detectada", "null") \
+            .filter("emocion_detectada", "not.is", "null") \
             .execute()
             
         mensajes = mensajes_res.data or []
@@ -32,10 +32,23 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
         total_sentimiento = 0.0
         conteo_total = 0
 
+        # Iteramos sobre las entradas del diario
         for entrada in entradas:
             emocion = entrada.get('emocion_predominante')
             sentimiento = entrada.get('promedio_sentimiento')
             if emocion:
+                emocion = emocion.lower() # Normalizamos
+                conteo_emociones[emocion] = conteo_emociones.get(emocion, 0) + 1
+            if sentimiento is not None:
+                total_sentimiento += sentimiento
+                conteo_total += 1
+
+        # Iteramos sobre los mensajes de chat analizados
+        for mensaje in mensajes:
+            emocion = mensaje.get('emocion_detectada')
+            sentimiento = mensaje.get('puntuacion_sentimiento')
+            if emocion:
+                emocion = emocion.lower() # Normalizamos
                 conteo_emociones[emocion] = conteo_emociones.get(emocion, 0) + 1
             if sentimiento is not None:
                 total_sentimiento += sentimiento

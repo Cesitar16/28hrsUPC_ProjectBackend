@@ -22,7 +22,6 @@ except ValueError as e:
     summary="Invocar al chatbot (Auri)",
     tags=["Chat"]
 )
-
 def invocar_chat(
     usuario_id: str = AuthUser, 
     mensaje: MensajeInput = Body(...)
@@ -44,7 +43,7 @@ def invocar_chat(
         respuesta_ia = agente_ia.invoke(
             texto_usuario=mensaje.texto,
             datos_usuario=datos_usuario,
-            historial_chat=historial_db
+            historial_chat_db=historial_db  # <--- CORRECCIÓN: (era 'historial_chat')
         )
 
         chat_service.guardar_mensaje(usuario_id, "user", mensaje.texto)
@@ -62,7 +61,6 @@ def invocar_chat(
     summary="Obtener historial de chat",
     tags=["Chat"]
 )
-
 def obtener_historial_chat_endpoint(
     usuario_id: str = AuthUser
 ):
