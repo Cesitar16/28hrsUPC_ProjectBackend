@@ -27,18 +27,41 @@ class RAGService:
                 print(f"[RAGService] ADVERTENCIA: El directorio '{KB_DIR}' está vacío o no existe.")
                 return None
 
-            print(f"[RAGService] Cargando documentos desde: {KB_DIR}")
+            print(f"[RAGService] Cargando documentos JSON desde: {KB_DIR}")
             
-            loader = DirectoryLoader(
-                KB_DIR,
-                show_progress=True,
-                use_multithreading=True,
-                loader_kwargs={"json_loader_kwargs": {"jq_schema": "try .entradas[] | .titulo + \": \" + .contenido catch .", "text_content": False}}
-            )
-            # ---------------------------------
+            # --- INICIO DEL BLOQUE MODIFICADO ---
             
-            documents = loader.load()
+            # Importaciones necesarias (puedes moverlas al inicio del archivo)
+            import glob
+            from langchain_community.document_loaders import JSONLoader
+
+            # 1. Encontrar todos los archivos .json en el directorio
+            json_files = glob.glob(os.path.join(KB_DIR, "*.json"))
+
+            if not json_files:
+                print(f"[RAGService] ADVERTENCIA: No se encontraron archivos .json en {KB_DIR}")
+                return None
+
+            documents = []
+            jq_schema = ".entradas[] | .titulo + \": \" + .contenido"
+
+            # 2. Iterar y cargar cada archivo JSON individualmente
+            for file_path in json_files:
+                try:
+                    # Usar JSONLoader directamente, pasando los argumentos de forma explícita
+                    loader = JSONLoader(
+                        file_path=file_path,
+                        jq_schema=jq_schema,
+                        text_content=False,
+                        json_lines=False  # ¡La corrección explícita!
+                    )
+                    documents.extend(loader.load())
+                except Exception as e:
+                    # Esto atrapará el "Not a valid ndjson" si aún ocurre en un archivo específico
+                    print(f"[RAGService] Error cargando el archivo {file_path}: {e}")
             
+            # --- FIN DEL BLOQUE MODIFICADO ---
+
             if not documents:
                 print("[RAGService] ADVERTENCIA: No se cargó ningún documento. Verifica los loaders y los archivos JSON.")
                 return None

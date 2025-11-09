@@ -11,6 +11,7 @@ langchain-openai
 langchain-community
 faiss-cpu
 unstructured
-tiktok
-en
+tiktoken
 gotrue
+email-validator
+jq
