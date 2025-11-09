@@ -1,11 +1,9 @@
-
 fastapi
 uvicorn[standard]
 openai
 python-dotenv
 supabase
 gotrue
-
 # Validación de Email para Pydantic (EmailStr)
 email-validator
 
