@@ -1,5 +1,7 @@
+# ruta: app/agents/rag_service.py
+
 import os
-import glob  # Importamos glob para buscar archivos
+import glob
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
@@ -7,7 +9,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from app.core.config import OPENAI_API_KEY
-from langchain_community.document_loaders import JSONLoader  # Importación correcta
+from langchain_community.document_loaders import JSONLoader
 
 KB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kb")
 
@@ -30,34 +32,27 @@ class RAGService:
 
             print(f"[RAGService] Cargando documentos desde: {KB_DIR}")
             
-            # --- INICIO DE LA CORRECCIÓN ---
-            
             documents = []
-            # Usamos glob para encontrar todos los archivos .json en el directorio
             json_files = glob.glob(os.path.join(KB_DIR, "*.json"))
 
             if not json_files:
                 print(f"[RAGService] ADVERTENCIA: No se encontraron archivos .json en {KB_DIR}")
                 return None
 
-            # Iteramos sobre cada archivo encontrado
             for file_path in json_files:
                 print(f"[RAGService] Cargando archivo: {file_path}")
                 try:
-                    # Creamos un JSONLoader PARA CADA ARCHIVO
                     loader = JSONLoader(
                         file_path=file_path,
-                        jq_schema=".entradas[] | .titulo + \": \" + .contenido", # <-- LÍNEA CORREGIDA
+                        jq_schema=".entradas[] | .titulo + \": \" + .contenido",
                         text_content=False
                     )
                     documents.extend(loader.load())
                 except Exception as e:
                     print(f"[RAGService] Error cargando el archivo {file_path}: {e}")
-
-            # --- FIN DE LA CORRECCIÓN ---
             
             if not documents:
-                print("[RAGService] ADVERTENCIA: No se cargó ningún documento. Verifica los loaders y los archivos JSON.")
+                print("[RAGService] ADVERTENCIA: No se cargó ningún documento.")
                 return None
 
             splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
@@ -71,12 +66,21 @@ class RAGService:
             print("[RAGService] Inicializando modelo de lenguaje...")
             llm = ChatOpenAI(model="gpt-4o-mini", temperature=0, openai_api_key=OPENAI_API_KEY)
 
+            # --- INICIO DE LA CORRECCIÓN DEL PROMPT ---
             template = (
-                "Usa la siguiente información del contexto para responder la pregunta.\n\n"
-                "Contexto:\n{context}\n\n"
+                "Eres un asistente de 'MiDiarioIA' que SÓLO responde preguntas sobre bienestar emocional, "
+                "manejo del estrés, creatividad y recursos de ayuda, basándote *únicamente* en el contexto provisto.\n"
+                "Si la respuesta no se encuentra en el contexto o la pregunta no está relacionada con bienestar, "
+                "DEBES responder amablemente: "
+                "'Lo siento, pero solo puedo ofrecer consejos sobre bienestar emocional y creatividad. No tengo información sobre ese tema.'\n\n"
+                "--- Contexto Provisto ---\n"
+                "{context}\n"
+                "--- Fin del Contexto ---\n\n"
                 "Pregunta: {question}\n\n"
                 "Respuesta:"
             )
+            # --- FIN DE LA CORRECCIÓN DEL PROMPT ---
+            
             prompt = ChatPromptTemplate.from_template(template)
 
             def format_docs(docs):
@@ -111,17 +115,14 @@ class RAGService:
     def buscar_contexto(self, query: str) -> str:
         """
         Método simple usado por el ConversationalAgent para obtener contexto.
-        Envuelve query_rag() pero garantiza que nunca rompa el flujo.
         """
         try:
             resultado = self.query_rag(query)
-
-            # Si el RAG responde con algo genérico, devolvemos string corto
-            if not resultado or resultado.startswith("No hay información"):
+            # (NUEVO) Si el RAG nos devuelve el fallback, no lo pasamos al chat.
+            if not resultado or resultado.startswith("Lo siento, pero solo puedo") or resultado.startswith("No hay información"):
                 return ""
 
-            return resultado[:500]  # limitar para no sobrecargar el prompt
-
+            return resultado[:500]
         except Exception as e:
             print(f"[RAGService] Error en buscar_contexto: {e}")
             return ""

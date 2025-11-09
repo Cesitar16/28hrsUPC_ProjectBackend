@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import chat_routes, diario_routes, users_routes, dashboard_routes
+from app.routes import chat_routes, diario_routes, users_routes, dashboard_routes, consejos_routes
 
 app = FastAPI(
     title="MiDiarioAI API",
@@ -29,6 +30,8 @@ app.include_router(chat_routes.router, prefix="/api")
 app.include_router(diario_routes.router, prefix="/api")
 
 app.include_router(dashboard_routes.router, prefix="/api")
+
+app.include_router(consejos_routes.router, prefix="/api")
 
 @app.get("/")
 def read_root():

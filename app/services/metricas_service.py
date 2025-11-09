@@ -2,6 +2,20 @@ from app.core.database import supabase
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 
+# (NUEVO) Función helper para interpretar el puntaje
+def _interpretar_sentimiento(score: float) -> str:
+    if score > 0.7:
+        return "Muy Positivo"
+    elif score > 0.3:
+        return "Positivo"
+    elif score > -0.3:
+        return "Neutral"
+    elif score > -0.7:
+        return "Negativo"
+    elif score <= -0.7:
+        return "Muy Negativo"
+    return "Neutral" # Fallback por si acaso
+
 def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
     """
     Calcula y devuelve las métricas agregadas para el dashboard del usuario.
@@ -38,7 +52,7 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
             emocion = entrada.get('emocion_predominante')
             sentimiento = entrada.get('promedio_sentimiento')
             if emocion:
-                emocion = emocion.lower() # Normalizamos
+                emocion = emocion.lower()
                 conteo_emociones[emocion] = conteo_emociones.get(emocion, 0) + 1
             if sentimiento is not None:
                 total_sentimiento += sentimiento
@@ -49,25 +63,29 @@ def calcular_metricas_dashboard(usuario_id: str) -> Dict[str, Any]:
             emocion = mensaje.get('emocion_detectada')
             sentimiento = mensaje.get('puntuacion_sentimiento')
             if emocion:
-                emocion = emocion.lower() # Normalizamos
+                emocion = emocion.lower()
                 conteo_emociones[emocion] = conteo_emociones.get(emocion, 0) + 1
             if sentimiento is not None:
                 total_sentimiento += sentimiento
                 conteo_total += 1
 
         # 5. Calcular resultados
-        promedio_sentimiento_general = (total_sentimiento / conteo_total) if conteo_total > 0 else 0.0
+        promedio_sentimiento_general = round((total_sentimiento / conteo_total) if conteo_total > 0 else 0.0, 2)
 
         emocion_principal = None
         if conteo_emociones:
             emocion_principal = max(conteo_emociones, key=conteo_emociones.get)
+
+        # (NUEVO) Interpretar el sentimiento
+        interpretacion = _interpretar_sentimiento(promedio_sentimiento_general)
 
         # 6. Devolver el resultado
         return {
             "total_entradas_diario": total_entradas,
             "emocion_mas_frecuente": emocion_principal,
             "conteo_emociones": conteo_emociones,
-            "promedio_sentimiento_general": round(promedio_sentimiento_general, 2)
+            "promedio_sentimiento_general": promedio_sentimiento_general,
+            "interpretacion_sentimiento": interpretacion # <-- (NUEVO)
         }
 
     except Exception as e:
