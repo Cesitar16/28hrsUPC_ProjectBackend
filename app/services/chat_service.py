@@ -1,28 +1,33 @@
-from app.core.supabase_client import supabase
+from app.core.database import supabase
 from datetime import datetime
 from typing import Optional, Dict, Any, List
+
 
 def guardar_mensaje(
     usuario_id: str,
     rol: str,
     texto: str,
-    respuesta: Optional[str] = None,
     emocion: Optional[str] = None,
     categoria: Optional[str] = None,
     puntaje: Optional[float] = None,
 ):
+    """Guarda un mensaje (usuario o IA) en la tabla ``mensajes_chat``.
+
+    Versión corregida: elimina el campo ``respuesta`` (inexistente en la tabla)
+    y añade un ``resumen`` simple para cumplir con la restricción ``NOT NULL``.
     """
-    Guarda un mensaje (usuario o IA) en la tabla 'mensajes_chat'.
-    """
+
+    resumen_simple = (texto[:75] + "...") if len(texto) > 75 else texto
+
     data = {
         "usuario_id": usuario_id,
         "rol": rol,
         "texto": texto,
-        "respuesta": respuesta,
         "emocion_detectada": emocion,
         "categoria_emocional": categoria,
         "puntuacion_sentimiento": puntaje,
-        "fecha": datetime.now().isoformat()
+        "fecha": datetime.now().isoformat(),
+        "resumen": resumen_simple,
     }
     supabase.table("mensajes_chat").insert(data).execute()
 

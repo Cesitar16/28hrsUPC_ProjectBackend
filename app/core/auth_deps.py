@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from app.core.supabase_client import supabase
+from app.core.database import supabase
 from gotrue.errors import GoTrueApiError
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")

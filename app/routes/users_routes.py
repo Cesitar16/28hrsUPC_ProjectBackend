@@ -1,5 +1,5 @@
 from fastapi import APIRouter, HTTPException, Body
-from app.core.supabase_client import supabase
+from app.core.database import supabase
 from app.schemas.usuario_schema import UsuarioCreate, UsuarioLogin, TokenResponse
 import app.services.user_service as user_service
 from gotrue.errors import GoTrueApiError
