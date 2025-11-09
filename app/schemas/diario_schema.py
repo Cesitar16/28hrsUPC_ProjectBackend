@@ -12,9 +12,9 @@ class EntradaDiarioCreate(BaseModel):
     contenido: str
     
     class Config:
-        orm_mode = True
+        from_attributes = True
         # Ejemplo para la documentación de la API
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "titulo": "Un día de reflexión",
                 "contenido": "Hoy me sentí un poco abrumado por el trabajo, pero logré terminar mi proyecto principal. Fue un alivio."
@@ -39,4 +39,4 @@ class EntradaDiarioResponse(BaseModel):
     creado_en: datetime
 
     class Config:
-        orm_mode = True
+        from_attributes = True

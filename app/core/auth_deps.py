@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from app.core.database import supabase
-from gotrue.errors import GoTrueApiError
+from gotrue.errors import GotrueError
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/token")
 
@@ -22,7 +22,7 @@ def get_current_user(token: str = Depends(oauth2_scheme)) -> dict:
         
         return user_response.user.id
     
-    except GoTrueApiError as e:
+    except GotrueError as e:
         print(f"Error de GoTrue al validar token: {e}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

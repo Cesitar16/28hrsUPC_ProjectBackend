@@ -13,7 +13,7 @@ class MensajeInput(BaseModel):
     texto: str
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "texto": "Hola Auri, ¿cómo estás?"
             }
@@ -31,4 +31,4 @@ class MensajeResponse(BaseModel):
     resumen: Optional[str] 
 
     class Config:
-        orm_mode = True
+        from_attributes = True

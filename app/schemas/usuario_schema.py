@@ -13,8 +13,8 @@ class UsuarioCreate(BaseModel):
     nombre: Optional[str] = None
 
     class Config:
-        orm_mode = True
-        schema_extra = {
+        from_attributes = True
+        json_schema_extra = {
             "example": {
                 "email": "usuario@example.com",
                 "password": "password123",
@@ -30,8 +30,8 @@ class UsuarioLogin(BaseModel):
     password: str
 
     class Config:
-        orm_mode = True
-        schema_extra = {
+        from_attributes = True
+        json_schema_extra = {
             "example": {
                 "email": "usuario@example.com",
                 "password": "password123"
