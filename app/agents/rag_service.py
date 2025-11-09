@@ -1,6 +1,5 @@
-import glob
 import os
-from langchain_community.document_loaders import UnstructuredJSONLoader
+import glob  # Importamos glob para buscar archivos
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAIEmbeddings, ChatOpenAI
 from langchain_community.vectorstores import FAISS
@@ -8,9 +7,9 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.runnables import RunnablePassthrough
 from app.core.config import OPENAI_API_KEY
+from langchain_community.document_loaders import JSONLoader  # Importación correcta
 
 KB_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "kb")
-
 
 class RAGService:
     """Servicio RAG moderno (LCEL). Usa la API de runnables en lugar de RetrievalQA."""
@@ -30,27 +29,33 @@ class RAGService:
                 return None
 
             print(f"[RAGService] Cargando documentos desde: {KB_DIR}")
-
+            
+            # --- INICIO DE LA CORRECCIÓN ---
+            
             documents = []
+            # Usamos glob para encontrar todos los archivos .json en el directorio
             json_files = glob.glob(os.path.join(KB_DIR, "*.json"))
 
             if not json_files:
                 print(f"[RAGService] ADVERTENCIA: No se encontraron archivos .json en {KB_DIR}")
                 return None
 
+            # Iteramos sobre cada archivo encontrado
             for file_path in json_files:
                 print(f"[RAGService] Cargando archivo: {file_path}")
                 try:
-                    loader = UnstructuredJSONLoader(
-                        file_path,
-                        jq_schema='try .entradas[] | .titulo + ": " + .contenido catch .',
-                        text_content=False,
-                        is_ndjson=False,
+                    # Creamos un JSONLoader PARA CADA ARCHIVO
+                    loader = JSONLoader(
+                        file_path=file_path,
+                        jq_schema=".entradas[] | .titulo + \": \" + .contenido", # <-- LÍNEA CORREGIDA
+                        text_content=False
                     )
                     documents.extend(loader.load())
                 except Exception as e:
-                    print(f"[RAGService] Error cargando archivo {file_path}: {e}")
+                    print(f"[RAGService] Error cargando el archivo {file_path}: {e}")
 
+            # --- FIN DE LA CORRECCIÓN ---
+            
             if not documents:
                 print("[RAGService] ADVERTENCIA: No se cargó ningún documento. Verifica los loaders y los archivos JSON.")
                 return None

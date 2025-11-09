@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException, Body
 from app.core.database import supabase
 from app.schemas.usuario_schema import UsuarioCreate, UsuarioLogin, TokenResponse
 import app.services.user_service as user_service
-from gotrue.errors import GotrueError
 
 router = APIRouter()
 
@@ -44,7 +43,7 @@ def register_user(
             "token_type": "bearer"
         }
 
-    except GotrueError as e:
+    except Exception as e:
         print(f"Error de Supabase al registrar: {e}")
         raise HTTPException(status_code=400, detail=f"Error al registrar: {e.message}")
     except Exception as e:
