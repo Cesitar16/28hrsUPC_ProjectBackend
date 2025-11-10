@@ -1,5 +1,3 @@
-# ruta: app/agents/rag_service.py
-
 import os
 import glob
 from langchain_text_splitters import RecursiveCharacterTextSplitter
@@ -68,15 +66,15 @@ class RAGService:
 
             # --- INICIO DE LA CORRECCIÓN DEL PROMPT ---
             template = (
-                "Eres un asistente de 'MiDiarioIA' que SÓLO responde preguntas sobre bienestar emocional, "
-                "manejo del estrés, creatividad y recursos de ayuda, basándote *únicamente* en el contexto provisto.\n"
-                "Si la respuesta no se encuentra en el contexto o la pregunta no está relacionada con bienestar, "
-                "DEBES responder amablemente: "
-                "'Lo siento, pero solo puedo ofrecer consejos sobre bienestar emocional y creatividad. No tengo información sobre ese tema.'\n\n"
+                "Eres un asistente de 'MiDiarioIA'. Tu objetivo es responder la 'Pregunta' del usuario usando *únicamente* la información del 'Contexto Provisto'.\n"
+                "Tu respuesta DEBE estar 100% basada en el contexto.\n\n"
+                "- **Si el contexto contiene información relevante** para responder la pregunta (aunque sea parcialmente), sintetiza una respuesta amable y directa. Combina la información si es necesario.\n"
+                "- **Si el contexto NO contiene información relevante** (o está vacío o no se relaciona con la pregunta), DEBES responder *exactamente* con la siguiente frase:\n"
+                "Lo siento, pero solo puedo ofrecer consejos sobre bienestar emocional y creatividad. No tengo información sobre ese tema.\n\n"
                 "--- Contexto Provisto ---\n"
                 "{context}\n"
                 "--- Fin del Contexto ---\n\n"
-                "Pregunta: {question}\n\n"
+                "Pregunta: {question}\n"
                 "Respuesta:"
             )
             # --- FIN DE LA CORRECCIÓN DEL PROMPT ---
@@ -118,7 +116,8 @@ class RAGService:
         """
         try:
             resultado = self.query_rag(query)
-            # (NUEVO) Si el RAG nos devuelve el fallback, no lo pasamos al chat.
+            
+            # (MODIFICADO) Actualizamos el texto de fallback que buscamos
             if not resultado or resultado.startswith("Lo siento, pero solo puedo") or resultado.startswith("No hay información"):
                 return ""
 
